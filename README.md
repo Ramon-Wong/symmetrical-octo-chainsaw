@@ -14,6 +14,8 @@ Features
 * Easy to extend
 * No package bloat
 * Minimal dependencies
+* No Frameworks, as Vanilla as it gets
+
 
 Installation
 ------------
