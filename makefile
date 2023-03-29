@@ -11,8 +11,13 @@ lib_paths		= $(shell pkg-config --libs webkit2gtk-4.0)
 
 WebView_H			= https://raw.githubusercontent.com/webview/webview/master/webview.h
 WebView_C			= https://raw.githubusercontent.com/webview/webview/master/webview.cc
+
 Build_Directory		= src build libs "libs/webview"
 libs				= --cflags --libs gtk+-3.0 webkit2gtk-4.0
+lib_paths			= $(pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0)
+
+source 				= jsobj.c
+temp_src			= temp.txt
 
 
 install:
@@ -34,5 +39,18 @@ build:
 clean:
 	rm -f $(objects) $(target) $(executable)
 
+read:
+	rm -f $(source);
 
+	@FILE="test.html"; \
+	sed -e 's/"/\\\\"/g' -e 's/$$/\\\n/' $$FILE > $(temp_src); \
+
+	echo "#include <stdio.h>" >> $(source); \
+	echo "const char *title = \"$$(cat $(temp_src) | grep -oP '<title>.*</title>' | sed -e 's/<title>//g' -e 's/<\/title>//g')\";" >> $(source); \
+	echo "const char *html = " >> $(source); \
+	cat $(temp_src) | while read line; do echo '\t"'"$${line}"'"' >> $(source); done
+	truncate -s-1 $(source); \
+	echo ";" >> $(source); \
+
+	rm -f $(temp_src);
 
